@@ -21,6 +21,9 @@ print(users)
 
 with open('users.json','w') as f:
     json.dump(users, f, indent=2)
+    
+print('Hola Mundo')
+
 
 
 
