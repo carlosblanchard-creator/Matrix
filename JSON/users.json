@@ -10,5 +10,11 @@
     "name": "Juan",
     "age": 34,
     "city": "Barcelona"
+  },
+  {
+    "id": 3,
+    "name": "Alberto",
+    "age": 86,
+    "city": "Sevilla"
   }
 ]
