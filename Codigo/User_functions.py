@@ -3,7 +3,7 @@ from JSON_functions import load_file, save_file
 File_name = 'users.json'
 
 #Funciones de Usuario
-def create_user(name, age, city):
+def add_user(name, age, city):
     users = load_file(File_name)
     new_id = max([i['id'] for i in users]) + 1 if users else 1
     new_user = {"id": new_id, "name": name, "age": age, "city": city}
