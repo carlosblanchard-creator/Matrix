@@ -1,0 +1,20 @@
+//No hace falta indicar el repositorio de github, puesto que en la carpeta de mi proyecto se ha guardado el archivo de configuracion con la ruta pertinente.
+//Subir cambios a Github
+git add .
+git commit -m "mensaje"
+git push
+
+//Descargar cambios de Github
+git pull
+
+//Ver la configuracion del github
+git remote -v
+
+//Ver historial de commits
+git log
+
+//Volver a una version anterior
+git checkout <commit_id>
+
+//Deshacer el ultimo commit
+git revert HEAD
