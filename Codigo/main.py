@@ -151,7 +151,6 @@ def show_main_menu():
     print("     4.- Add workout")
     print("     5.- View workout")
     print("     6.- Delete workout")
-    print("     7.- Count workouts")
     print("")
     print("     0.- Exit")
 
@@ -177,8 +176,6 @@ def main_menu():
                 menu_get_wo()
             case "6":
                 menu_del_wo()
-            case "7":
-                menu_count_wo()
         
 
 if __name__ == "__main__":
