@@ -24,18 +24,22 @@ def get_workout(get_id):
             return w
     return None
 
+
+def get_workout_by_user(user_id, ini_date=None, end_date=None):
+    workouts = load_file(File_name)
+    user_workouts = [w for w in workouts if w['user_id']==user_id]   
+    
+    if ini_date and not end_date:
+        user_workouts = [w for w in user_workouts if w['wo_date']==ini_date]
+    elif ini_date and end_date:
+        user_workouts = [w for w in user_workouts if w['wo_date']>=ini_date and w['wo_date']<=end_date]
+    return user_workouts
+
 def delete_workout(delete_id):
     workouts = load_file(File_name)
-    try:
-        workouts_f = [w for w in workouts if w['wo_id']!=val_wo(delete_id)]
-    except ValueError as e:
-        print(e)
-        return False
-    
+    workouts_f = [w for w in workouts if w['wo_id']!=delete_id]
     save_file(workouts_f,File_name)
-
-    print(f"Workout ID {delete_id} was deleted successfully.")
-    return True
+    return
 
 def delete_workout_by_user(user_id):
     workouts = load_file(File_name)
