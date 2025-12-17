@@ -16,5 +16,11 @@
     "name": "Javier",
     "age": 21,
     "city": "Bilbao"
+  },
+  {
+    "user_id": 4,
+    "name": "Maria",
+    "age": 29,
+    "city": "San Sebastian de los Reyes"
   }
 ]

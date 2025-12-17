@@ -1,10 +1,10 @@
 from datetime import datetime
 from JSON_functions import load_file, save_file
+from config import WORKOUTS_FILE
 
-File_name = "workouts.json"
 
 def add_workout(user_id,wo_date,exercise,amount,amount_type,intensity):
-    workouts = load_file(File_name)
+    workouts = load_file(WORKOUTS_FILE)
     new_id = max([w['wo_id'] for w in workouts])+1 if workouts else 1
     new_w = {'wo_id':new_id, 
             'user_id':user_id, 
@@ -14,11 +14,11 @@ def add_workout(user_id,wo_date,exercise,amount,amount_type,intensity):
             'amount_type':amount_type,
             'intensity':intensity}
     workouts.append(new_w)
-    save_file(workouts,File_name)
+    save_file(workouts,WORKOUTS_FILE)
     return new_w
 
 def get_workout(get_id):
-    workouts = load_file(File_name)
+    workouts = load_file(WORKOUTS_FILE)
     for w in workouts:
         if w['wo_id'] == get_id:
             return w
@@ -26,7 +26,7 @@ def get_workout(get_id):
 
 
 def get_workout_by_user(user_id, ini_date=None, end_date=None):
-    workouts = load_file(File_name)
+    workouts = load_file(WORKOUTS_FILE)
     user_workouts = [w for w in workouts if w['user_id']==user_id]   
     
     if ini_date and not end_date:
@@ -36,20 +36,20 @@ def get_workout_by_user(user_id, ini_date=None, end_date=None):
     return user_workouts
 
 def delete_workout(delete_id):
-    workouts = load_file(File_name)
+    workouts = load_file(WORKOUTS_FILE)
     workouts_f = [w for w in workouts if w['wo_id']!=delete_id]
-    save_file(workouts_f,File_name)
+    save_file(workouts_f,WORKOUTS_FILE)
     return
 
 def delete_workout_by_user(user_id):
-    workouts = load_file(File_name)
+    workouts = load_file(WORKOUTS_FILE)
     workouts_f = [w for w in workouts if w['user_id']!=user_id]    
-    save_file(workouts_f, File_name)
+    save_file(workouts_f, WORKOUTS_FILE)
     return
 
 
 def count_workouts(user_id, ini_date=None, end_date=None):
-    workouts = load_file(File_name)
+    workouts = load_file(WORKOUTS_FILE)
     user_workouts = [w for w in workouts if w['user_id']==user_id]
     if ini_date and not end_date:
         user_workouts = [w for w in user_workouts if w['wo_date']==ini_date]

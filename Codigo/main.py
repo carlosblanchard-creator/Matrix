@@ -63,7 +63,7 @@ def menu_add_wo():
     print("")
     try:
         user_id = val_user(input("User ID: "))
-        wo_date = val_date(input("Workout date: "))
+        wo_date = val_date(input("Workout date (YYYY-MM-DD): "))
         exercise = input("Exercise: ")
         amount_type = val_amt_tp(input("Amount type 'r' (reps) / 't' (time): "))
         amount = val_amt(input("Amount: "))
@@ -92,6 +92,10 @@ def menu_get_wo():
             wo_end_date = val_date(wo_end_date, True)
         
         workouts = get_workout_by_user(user_id,wo_ini_date,wo_end_date)
+        if not workouts:
+            print("No workouts found for the selected filters.")
+            pause()
+            return
         for w in workouts:
             print(f"Workout ID: {w['wo_id']} | User ID: {w['user_id']} | Date: {w['wo_date']} | Exercise: {w['exercise']} | {w['amount']} {'min' if w['amount_type'] == 't' else 'repeticiones'} | Intensity:  {w['intensity']}")
         
@@ -99,11 +103,11 @@ def menu_get_wo():
         total_mins = sum(int(w['amount']) for w in workouts if w['amount_type']=='t')
         wo_ini_date = datetime.strptime(min(w['wo_date'] for w in workouts),"%Y-%m-%d")
         wo_end_date = datetime.strptime(max(w['wo_date'] for w in workouts),"%Y-%m-%d")
-        delta = wo_end_date - wo_ini_date
-        print(delta)
+        delta = wo_end_date - wo_ini_date 
+        
         print("\nSummary:")
         print(f"    Total workout sessions: {len(workouts)}")
-        print(f"    Workouts per day: {round(len(workouts)/delta.days,2) if delta.days>0 else 0}")
+        print(f"    Workouts per day: {round(len(workouts)/(delta.days+1),2)}")
         print(f"    Total reps: {total_reps}")
         print(f"    Total minutes: {total_mins}")
     except ValueError as e:
@@ -124,8 +128,6 @@ def menu_del_wo():
     
     delete_workout(wo_id)
     print(f"Workout ID {wo_id} has been removed successfully.")
-
-# def menu_count_wo():
 
 
 def pause():
@@ -176,6 +178,9 @@ def main_menu():
                 menu_get_wo()
             case "6":
                 menu_del_wo()
+            case _:
+                print("Please, select a valid option")
+                pause()
         
 
 if __name__ == "__main__":
