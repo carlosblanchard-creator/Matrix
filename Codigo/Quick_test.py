@@ -1,5 +1,6 @@
 import os
 from User_functions import add_user, get_user, delete_user, val_user, val_age
+from datetime import datetime
 # from Workout_functions import add_workout, delete_workout, get_workout, count_workouts
 
 # add_user("Alberto", 86, "Sevilla")
@@ -14,3 +15,5 @@ from User_functions import add_user, get_user, delete_user, val_user, val_age
 # print(count_workouts(1,"2025-12-10"))
 
 # print(count_workouts(1,"2025-12-09","2025-12-22"))
+
+print(datetime.now())

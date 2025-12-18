@@ -16,5 +16,5 @@ def load_file(f_name):
 
 def save_file(content, f_name):
     with open(path+f_name,"w") as f:
-        json.dump(content, f, indent=2)
+        json.dump(content, f, indent=2, default=str)
 

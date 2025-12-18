@@ -24,6 +24,14 @@ def get_workout(get_id):
             return w
     return None
 
+def mod_workout(mod_id, field, field_value):
+    workouts = load_file(WORKOUTS_FILE)
+    for w in workouts:
+        if w['wo_id'] == mod_id:
+            w[field]=field_value
+            save_file(workouts, WORKOUTS_FILE)
+            return w
+    return None
 
 def get_workout_by_user(user_id, ini_date=None, end_date=None):
     workouts = load_file(WORKOUTS_FILE)

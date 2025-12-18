@@ -1,7 +1,12 @@
 import os
 from datetime import datetime
-from User_functions import add_user, get_user, delete_user, val_user, val_age
-from Workout_functions import add_workout, delete_workout, get_workout, get_workout_by_user, count_workouts, delete_workout_by_user, val_date, val_amt_tp, val_intensity, val_wo, val_amt
+from User_functions import add_user, get_user, mod_user, delete_user, val_user, val_age, val_email, val_password
+from Workout_functions import add_workout, delete_workout, get_workout, mod_workout, get_workout_by_user, count_workouts, delete_workout_by_user, val_date, val_amt_tp, val_intensity, val_wo, val_amt
+from getpass import getpass
+import hashlib
+
+def hash_password(pwd):
+    return hashlib.sha256(pwd.encode()).hexdigest()
 
 def menu_add_user():
     # clean_con()
@@ -12,9 +17,13 @@ def menu_add_user():
         name = input("Name: ")
         age = val_age(input("Age: "))
         city = input("City: ")
-        new_user = add_user(name, age,city)
+        email = val_email(input("Email: "),"Y")
+        pwd = hash_password(val_password(getpass("Select your password: "),getpass("Type your password again: ")))
 
-        print(f"New user, {new_user['name']}, added successfully with ID {new_user['user_id']}")
+        new_user = add_user(name, age,city, email, pwd)
+
+        print(f"New user, {new_user['name']}, added successfully with ID {new_user['user_id']} and email: {new_user['email']}")
+
     except ValueError as e:
         print(e)
     
@@ -31,6 +40,60 @@ def menu_get_user():
     except ValueError as e:
         print(e)
     
+    pause()
+
+def menu_mod_user():
+    # clean_con()
+    print(f"\n{'='*10}{' '*4} MODIFY USER {' '*3}{'='*10}")
+    print("")
+    try:
+        user_id = val_user(input("User ID to be modified: "))
+    except ValueError as e:
+        print(e)
+        pause()
+        return
+    while True:
+        print("\nWhich field would you like to change?")
+        print("     1.- Name")
+        print("     2.- Age")
+        print("     3.- City")
+        print("     4.- Email")
+        print("     5.- Password")
+        print("\n     0.- Cancel")
+        opcion = input("\nSelect an option: ")
+        try:
+            match opcion:
+                case "0":
+                    return
+                case "1":
+                    field = "name"
+                    new_value = input("\nIntroduce the new name: ")
+                    break
+                case "2":
+                    field = "age"
+                    new_value = val_age(input("\nIntroduce the new age: "))
+                    break
+                case "3":
+                    field = "city"
+                    new_value = input("\nIntroduce the new city: ")
+                    break
+                case "4":
+                    field = "email"
+                    new_value = val_email(input("\nIntroduce the new email: "),"Y")
+                    break
+                case "5":
+                    field = "password"
+                    new_value = hash_password(val_password(getpass("Select your new password: "),getpass("Type your new password again: ")))
+                    break
+                case _:
+                    print("Option is not valid")
+                    pause()
+        except ValueError as e:
+            print(e)
+            pause()
+
+    mod_user(user_id, field, new_value)
+    print("User has been modified successfully.")
     pause()
     
 def menu_del_user():
@@ -63,7 +126,7 @@ def menu_add_wo():
     print("")
     try:
         user_id = val_user(input("User ID: "))
-        wo_date = val_date(input("Workout date (YYYY-MM-DD): "))
+        wo_date = val_date(input("Workout date YYYY-MM-DD: "))
         exercise = input("Exercise: ")
         amount_type = val_amt_tp(input("Amount type 'r' (reps) / 't' (time): "))
         amount = val_amt(input("Amount: "))
@@ -83,11 +146,11 @@ def menu_get_wo():
     print("")
     try:
         user_id = val_user(input("User ID: "))
-        wo_ini_date = input("From date (optional, YYYY-MM-DD): ").strip() or None
+        wo_ini_date = input("From date YYYY-MM-DD (optional)): ").strip() or None
         wo_end_date = None
         if wo_ini_date:
             wo_ini_date = val_date(wo_ini_date)
-            wo_end_date = input("To date (optional, YYYY-MM-DD): ").strip() or None
+            wo_end_date = input("To date YYYY-MM-DD (optional)): ").strip() or None
         if wo_end_date:
             wo_end_date = val_date(wo_end_date, True)
         
@@ -113,6 +176,61 @@ def menu_get_wo():
     except ValueError as e:
         print(e)
     
+    pause()
+
+
+def menu_mod_workout():
+    # clean_con()
+    print(f"\n{'='*10}{' '*2} MODIFY WORKOUT {' '*2}{'='*10}")
+    print("")
+    try:
+        wo_id = val_wo(input("Workout ID to be modified: "))
+    except ValueError as e:
+        print(e)
+        pause()
+        return
+    while True:
+        print("\nWhich field would you like to change?")
+        print("     1.- Workout date")
+        print("     2.- Exercise")
+        print("     3.- Amount type")
+        print("     4.- Amount")
+        print("     5.- Intensity")
+        print("\n     0.- Cancel")
+        opcion = input("\nSelect an option: ")
+        try:
+            match opcion:
+                case "0":
+                    return
+                case "1":
+                    field = "wo_date"
+                    new_value = val_date(input("\nIntroduce the new date (YYYY/MM/DD): "))
+                    break
+                case "2":
+                    field = "exercise"
+                    new_value = input("\nIntroduce the new exercise: ")
+                    break
+                case "3":
+                    field = "amount_type"
+                    new_value = val_amt_tp(input("\nIntroduce the new amount type (r/t): "))
+                    break
+                case "4":
+                    field = "amount"
+                    new_value = val_amt(input("\nIntroduce the new amount: "))
+                    break
+                case "5":
+                    field = "intensity"
+                    new_value = val_intensity(input("\nIntroduce the new intensity ('Lo'/'Me'/'Hi'): "))
+                    break
+                case _:
+                    print("Option is not valid")
+                    pause()
+        except ValueError as e:
+            print(e)
+            pause()
+
+    mod_workout(wo_id, field, new_value)
+    print("Workout has been modified successfully.")
     pause()
 
 def menu_del_wo():
@@ -147,12 +265,13 @@ def show_main_menu():
     print("     User functions:")
     print("     1.- Create user")
     print("     2.- View user")
-    print("     3.- Delete user")
+    print("     3.- Modify user")
+    print("     4.- Delete user")
     print("")
     print("     Workout functions:")
-    print("     4.- Add workout")
-    print("     5.- View workout")
-    print("     6.- Delete workout")
+    print("     5.- Add workout")
+    print("     6.- View workout")
+    print("     7.- Delete workout")
     print("")
     print("     0.- Exit")
 
@@ -171,12 +290,16 @@ def main_menu():
             case "2":
                 menu_get_user()
             case "3":
-                menu_del_user()
+                menu_mod_user()
             case "4":
-                menu_add_wo()
+                menu_del_user()
             case "5":
-                menu_get_wo()
+                menu_add_wo()
             case "6":
+                menu_get_wo()
+            case "7":
+                menu_mod_wo()
+            case "8":
                 menu_del_wo()
             case _:
                 print("Please, select a valid option")
