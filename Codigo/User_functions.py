@@ -1,7 +1,6 @@
 from JSON_functions import load_file, save_file
 from config import USERS_FILE
 from datetime import datetime
-from email_validator import validate_email, EmailNotValidError
 import re
 
 #Funciones de Usuario
@@ -64,22 +63,25 @@ def val_age(age):
         raise ValueError("ERROR: Age must be a positive number.")
     return age
 
+# Validate email, to see if the email is valid. If new_user_flg = Y it checks if the email already exists in our DB (to avoid duplicates). If = N it does the opposite (it should exist in the DB)
 def val_email(email, new_user_flg):
-    try:
-        valid = validate_email(email)
-        email_norm = valid.email
-    except EmailNotValidError as e:
-        raise ValueError(str(e))
-    
+    email_norm = email.strip().lower()
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    if not re.match(pattern,email_norm):
+        raise ValueError("ERROR: Invalid email format")
+
     if new_user_flg == 'Y':
         if get_user_by_email(email_norm):
             raise ValueError("ERROR: email already exists")
+    
+    if new_user_flg == 'N':
+        if get_user_by_email(email_norm) is None:
+            raise ValueError("ERROR: email doesnt exist")
         
     return email_norm
     
     
 def val_password(pwd, pwd2=None):
-    
     if len(pwd) < 8:
         raise ValueError("ERROR: Password must have at least 8 characters.")
     if not re.search(r"[A-Z]",pwd) or not re.search(r"[a-z]",pwd):
@@ -91,3 +93,4 @@ def val_password(pwd, pwd2=None):
         raise ValueError("ERROR: Password must be the same.")
     
     return pwd
+

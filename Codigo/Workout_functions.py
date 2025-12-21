@@ -17,11 +17,16 @@ def add_workout(user_id,wo_date,exercise,amount,amount_type,intensity):
     save_file(workouts,WORKOUTS_FILE)
     return new_w
 
-def get_workout(get_id):
+def get_workout(get_id, user_id=None):
     workouts = load_file(WORKOUTS_FILE)
-    for w in workouts:
-        if w['wo_id'] == get_id:
-            return w
+    if user_id is not None: #if user_id != None, it is a non admin user (only access to its own workouts)
+        for w in workouts:
+            if w['wo_id'] == get_id and w['user_id'] == user_id:
+                return w
+    else:
+        for w in workouts:
+            if w['wo_id'] == get_id:
+                return w
     return None
 
 def mod_workout(mod_id, field, field_value):
@@ -95,11 +100,14 @@ def val_intensity(intensity):
         raise ValueError("ERROR: Intensity must be 'Lo', 'Me', 'Hi'.")
     return intensity
 
-def val_wo(wo_id):
+def val_wo(wo_id, user_id = None):
     try:
         wo_id = int(wo_id)
     except (ValueError, TypeError):
         raise ValueError("ERROR: Workout ID must be a positive number.")
-    if get_workout(wo_id) == None:
+    if user_id is not None: #user_id != None when non admin user
+        if get_workout(wo_id, user_id) == None:
+            raise ValueError(f"ERROR: Workout ID {wo_id} does not exist for User ID {user_id}.")
+    elif get_workout(wo_id) == None:
         raise ValueError(f"ERROR: Workout ID {wo_id} does not exist.")
     return wo_id

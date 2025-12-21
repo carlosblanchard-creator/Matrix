@@ -1,7 +1,11 @@
 import json
 import os
 
-path = "JSON/"
+# Load config
+with open("config.json", "r") as config:
+    config = json.load(config)
+
+path = config["json_path"]
 
 #Acceso a ficheros JSON
 def load_file(f_name):

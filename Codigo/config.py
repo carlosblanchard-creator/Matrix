@@ -1,8 +1,6 @@
 import json
 
-path = "JSON/"
-
-with open(path+"config.json","r") as f:
+with open("config.json","r") as f:
     config = json.load(f)
 
 ENV = config["ENV"]

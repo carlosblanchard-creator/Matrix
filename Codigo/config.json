@@ -7,5 +7,7 @@
     "PROD":{
         "users_file": "users_prod.json",
         "workouts_file": "workouts_prod.json"
-    }
+    },
+    "json_path":"JSON/"
+    
 }

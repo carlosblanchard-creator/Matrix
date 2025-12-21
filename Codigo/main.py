@@ -1,16 +1,28 @@
 import os
 from datetime import datetime
-from User_functions import add_user, get_user, mod_user, delete_user, val_user, val_age, val_email, val_password
+from User_functions import add_user, get_user, get_user_by_email,mod_user, delete_user, val_user, val_age, val_email, val_password
 from Workout_functions import add_workout, delete_workout, get_workout, mod_workout, get_workout_by_user, count_workouts, delete_workout_by_user, val_date, val_amt_tp, val_intensity, val_wo, val_amt
 from getpass import getpass
 import hashlib
 
+session_user = None
+
+# Generic functions
+
 def hash_password(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
 
+def pause():
+    input("\nPress ENTER to continue")
+
+def clean_con():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+# Main menu functions:
 def menu_add_user():
+    global session_user
     # clean_con()
-    print(f"\n{'='*10}{' '*5} ADD USER {' '*5}{'='*10}")
+    print(f"\n{'='*10}{' '*5} SIGN UP {' '*6}{'='*10}")
     print("")
     
     try:
@@ -20,9 +32,10 @@ def menu_add_user():
         email = val_email(input("Email: "),"Y")
         pwd = hash_password(val_password(getpass("Select your password: "),getpass("Type your password again: ")))
 
-        new_user = add_user(name, age,city, email, pwd)
+        session_user = add_user(name, age,city, email, pwd)
+        
+        print(f"New user, {session_user['name']}, added successfully with ID {session_user['user_id']} and email: {session_user['email']}")
 
-        print(f"New user, {new_user['name']}, added successfully with ID {new_user['user_id']} and email: {new_user['email']}")
 
     except ValueError as e:
         print(e)
@@ -30,24 +43,33 @@ def menu_add_user():
     pause()
 
 def menu_get_user():
+    global session_user
     # clean_con()
     print(f"\n{'='*10}{' '*5} GET USER {' '*5}{'='*10}")
     print("")
     
     try:
-        user = get_user(val_user(input("User ID: ")))
-        print(f"Name: {user['name']}\nAge: {user['age']}\nCity: {user['city']}")
+        if session_user['role']=="admin":
+            user_id = val_user(input("User ID: "))
+        else:
+            user_id = session_user['user_id']
+        user = get_user(user_id)
+        print(f"User ID: {user['user_id']}\nName: {user['name']}\nAge: {user['age']}\nCity: {user['city']}\ne-mail: {user['email']}")
     except ValueError as e:
         print(e)
     
     pause()
 
 def menu_mod_user():
+    global session_user
     # clean_con()
     print(f"\n{'='*10}{' '*4} MODIFY USER {' '*3}{'='*10}")
     print("")
     try:
-        user_id = val_user(input("User ID to be modified: "))
+        if session_user['role']=="admin":
+            user_id = val_user(input("User ID to be modified: "))
+        else:
+            user_id = session_user['user_id']
     except ValueError as e:
         print(e)
         pause()
@@ -97,35 +119,46 @@ def menu_mod_user():
     pause()
     
 def menu_del_user():
+    global session_user
     # clean_con()
     print(f"\n{'='*10}{' '*4} DELETE USER {' '*3}{'='*10}")
     print("")
     try:
-        user_id = val_user(input("User ID: "))
+        if session_user['role']=="admin":
+            user_id = val_user(input("User ID: "))
+        else:
+            user_id = session_user['user_id']
     except ValueError as e:
         print(e)
         pause()
         return
+    
+    sure = input(f"Are you sure you want to delete all the data related to User ID {user_id}? Y/N: ")
+    if sure == "Y":
+        # Delete all the workouts related to the User ID that is going to be deleted
+        x=count_workouts(user_id)
+        delete_workout_by_user(user_id)
+        if x==0:
+            print(f"No workouts found for User ID {user_id}")
+        else:
+            print(f"{x} workout logs have been removed successfully from User ID {user_id}")
 
-    # Delete all the workouts related to the User ID that is going to be deleted
-    x=count_workouts(user_id)
-    delete_workout_by_user(user_id)
-    if x==0:
-        print(f"No workouts found for User ID {user_id}")
-    else:
-        print(f"{x} workout logs have been removed successfully from User ID {user_id}")
-
-    # Delete user
-    delete_user(user_id)
-    print(f"User ID {user_id} was deleted successfully.")
+        # Delete user
+        delete_user(user_id)
+        print(f"User ID {user_id} was deleted successfully.")
+    
     pause()
 
 def menu_add_wo():
+    global session_user
     # clean_con()
     print(f"\n{'='*10}{' '*4} ADD WORKOUT {' '*3}{'='*10}")
     print("")
     try:
-        user_id = val_user(input("User ID: "))
+        if session_user['role']=="admin":
+            user_id = val_user(input("User ID: "))
+        else:
+            user_id = session_user['user_id']
         wo_date = val_date(input("Workout date YYYY-MM-DD: "))
         exercise = input("Exercise: ")
         amount_type = val_amt_tp(input("Amount type 'r' (reps) / 't' (time): "))
@@ -141,11 +174,15 @@ def menu_add_wo():
 
 
 def menu_get_wo():
+    global session_user
     # clean_con()
     print(f"\n{'='*10}{' '*4} GET WORKOUT {' '*3}{'='*10}")
     print("")
     try:
-        user_id = val_user(input("User ID: "))
+        if session_user['role']=="admin":
+            user_id = val_user(input("User ID: ")) 
+        else:
+            user_id = session_user['user_id']
         wo_ini_date = input("From date YYYY-MM-DD (optional)): ").strip() or None
         wo_end_date = None
         if wo_ini_date:
@@ -179,12 +216,15 @@ def menu_get_wo():
     pause()
 
 
-def menu_mod_workout():
+def menu_mod_wo():
+    global session_user
     # clean_con()
     print(f"\n{'='*10}{' '*2} MODIFY WORKOUT {' '*2}{'='*10}")
     print("")
+    if session_user['role']!="admin":
+        user_id = session_user['user_id']
     try:
-        wo_id = val_wo(input("Workout ID to be modified: "))
+        wo_id = val_wo(input("Workout ID to be modified: "), user_id)
     except ValueError as e:
         print(e)
         pause()
@@ -196,7 +236,7 @@ def menu_mod_workout():
         print("     3.- Amount type")
         print("     4.- Amount")
         print("     5.- Intensity")
-        print("\n     0.- Cancel")
+        print("\n     0.- Go Back")
         opcion = input("\nSelect an option: ")
         try:
             match opcion:
@@ -237,8 +277,10 @@ def menu_del_wo():
     # clean_con()
     print(f"\n{'='*10}{' '*2} DELETE WORKOUT {' '*2}{'='*10}")
     print("")
+    if session_user['role']!="admin":
+        user_id = session_user['user_id']
     try:
-        wo_id = val_wo(input("Workout ID: "))
+        wo_id = val_wo(input("Workout ID to be deleted: "), user_id)
     except ValueError as e:
         print(e)
         pause()
@@ -247,64 +289,112 @@ def menu_del_wo():
     delete_workout(wo_id)
     print(f"Workout ID {wo_id} has been removed successfully.")
 
-
-def pause():
-    input("\nPress ENTER to return to the main menu")
-
-def clean_con():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-def show_main_menu():
-    clean_con()
-
-    print("="*40)
-    print(f"{"="*10}{" "*4} Welcome to {" "*4}{"="*10}")
-    print(f"{"="*10}{" "*6} MATRIX {" "*6}{"="*10}")
-    print("="*40)
-    print("")
-    print("     User functions:")
-    print("     1.- Create user")
-    print("     2.- View user")
-    print("     3.- Modify user")
-    print("     4.- Delete user")
-    print("")
-    print("     Workout functions:")
-    print("     5.- Add workout")
-    print("     6.- View workout")
-    print("     7.- Delete workout")
-    print("")
-    print("     0.- Exit")
-
-
-def main_menu():
+# Main menu & Login 
+def login():
+    global session_user
     while True:
-        show_main_menu()
-        opcion = input("\nSelect an option: ")
+        clean_con()
+        print('='*40)
+        print(f"{'='*10}{' '*4} Welcome to {' '*4}{'='*10}")
+        print(f"{'='*10}{' '*6} MATRIX {' '*6}{'='*10}")
+        print('='*40)
+        print("     1.- Sign up")
+        print("     2.- Log in")
+        option = input("Select an option: ")
+        if option == "1":
+            menu_add_user()
+            break
+        if option == "2":
+            try:
+                email = val_email(input("Email: "),"N")
+                pwd = hash_password(getpass("Password: "))
+                user = get_user_by_email(email)
+                if user['password'] != pwd:
+                    raise ValueError("ERROR: Incorrect password.")
+                
+                session_user = user
+                print(f"\nWelcome to the Matrix, {user['name']}")
+                pause()
+                break
+                
+            except ValueError as e:
+                print(e)
+                pause()
+        else:
+            print("Please, select a valid option")
+            pause()
 
-        match opcion:
+def logout():
+    global session_user
+    session_user = None
+    print("See you soon! And don't trust anyone who says burpees are fun.")
+    pause()
+
+def user_menu():
+    while True:
+        clean_con()
+        print(f"\n{'='*10}{' '*2} USER MANAGEMENT {' '*1}{'='*10}")
+        print("")
+        print("     1.- View user")
+        print("     2.- Modify user")
+        print("     3.- Delete user")
+        print("")
+        print("     0.- Go back")
+        option = input("\nSelect an option: ")
+
+        match option:
             case "0":
-                print("See you soon! And don't trust anyone who says burpees are fun.")
                 break
             case "1":
-                menu_add_user()
-            case "2":
                 menu_get_user()
-            case "3":
+            case "2":
                 menu_mod_user()
-            case "4":
+            case "3":
                 menu_del_user()
-            case "5":
+                logout()
+            case _:
+                print("Please, select a valid option")
+                pause()
+
+def main_menu():
+    global session_user
+    while session_user:
+        clean_con()
+        print('='*40)
+        print(f"{'='*10}{' '*5} MAIN MENU {' '*4}{'='*10}")
+        print('='*40)
+        print("")
+
+        print("")
+        print("     1.- Add workout")
+        print("     2.- View workout")
+        print("     3.- Delete workout")
+        print("")
+        print("     9.- User management")
+        print("")
+        print("     0.- Exit")
+        option = input("\nSelect an option: ")
+
+        match option:
+            case "0":
+                logout()
+                break
+            case "1":
                 menu_add_wo()
-            case "6":
+            case "2":
                 menu_get_wo()
-            case "7":
+            case "3":
                 menu_mod_wo()
-            case "8":
-                menu_del_wo()
+            case "9":
+                user_menu()
             case _:
                 print("Please, select a valid option")
                 pause()
         
-
+# Execute
 if __name__ == "__main__":
-    main_menu()
+    while True:
+        if session_user == None:
+            login()
+        if session_user:
+            main_menu()
