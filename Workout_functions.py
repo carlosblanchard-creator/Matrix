@@ -1,10 +1,10 @@
 from datetime import datetime
 from JSON_functions import load_file, save_file
-from config import WORKOUTS_FILE
+import config
 
 
 def add_workout(user_id,wo_date,exercise,amount,amount_type,intensity):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     new_id = max([w['wo_id'] for w in workouts])+1 if workouts else 1
     new_w = {'wo_id':new_id, 
             'user_id':user_id, 
@@ -14,11 +14,11 @@ def add_workout(user_id,wo_date,exercise,amount,amount_type,intensity):
             'amount_type':amount_type,
             'intensity':intensity}
     workouts.append(new_w)
-    save_file(workouts,WORKOUTS_FILE)
+    save_file(workouts,config.WORKOUTS_FILE)
     return new_w
 
 def get_workout(get_id, user_id=None):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     if user_id is not None: #if user_id != None, it is a non admin user (only access to its own workouts)
         for w in workouts:
             if w['wo_id'] == get_id and w['user_id'] == user_id:
@@ -30,16 +30,16 @@ def get_workout(get_id, user_id=None):
     return None
 
 def mod_workout(mod_id, field, field_value):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     for w in workouts:
         if w['wo_id'] == mod_id:
             w[field]=field_value
-            save_file(workouts, WORKOUTS_FILE)
+            save_file(workouts, config.WORKOUTS_FILE)
             return w
     return None
 
 def get_workout_by_user(user_id, ini_date=None, end_date=None):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     user_workouts = [w for w in workouts if w['user_id']==user_id]   
     
     if ini_date and not end_date:
@@ -49,20 +49,20 @@ def get_workout_by_user(user_id, ini_date=None, end_date=None):
     return user_workouts
 
 def delete_workout(delete_id):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     workouts_f = [w for w in workouts if w['wo_id']!=delete_id]
-    save_file(workouts_f,WORKOUTS_FILE)
+    save_file(workouts_f,config.WORKOUTS_FILE)
     return
 
 def delete_workout_by_user(user_id):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     workouts_f = [w for w in workouts if w['user_id']!=user_id]    
-    save_file(workouts_f, WORKOUTS_FILE)
+    save_file(workouts_f, config.WORKOUTS_FILE)
     return
 
 
 def count_workouts(user_id, ini_date=None, end_date=None):
-    workouts = load_file(WORKOUTS_FILE)
+    workouts = load_file(config.WORKOUTS_FILE)
     user_workouts = [w for w in workouts if w['user_id']==user_id]
     if ini_date and not end_date:
         user_workouts = [w for w in user_workouts if w['wo_date']==ini_date]

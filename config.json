@@ -1,0 +1,12 @@
+{
+  "ENV": "DEV",
+  "DEV": {
+    "users_file": "users_dev.json",
+    "workouts_file": "workouts_dev.json"
+  },
+  "PROD": {
+    "users_file": "users_prod.json",
+    "workouts_file": "workouts_prod.json"
+  },
+  "json_path": "JSON/"
+}

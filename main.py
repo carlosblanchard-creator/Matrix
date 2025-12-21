@@ -1,9 +1,12 @@
 import os
+import config
+from getpass import getpass
+import hashlib
+config.set_environment(1)
 from datetime import datetime
 from User_functions import add_user, get_user, get_user_by_email,mod_user, delete_user, val_user, val_age, val_email, val_password
 from Workout_functions import add_workout, delete_workout, get_workout, mod_workout, get_workout_by_user, count_workouts, delete_workout_by_user, val_date, val_amt_tp, val_intensity, val_wo, val_amt
-from getpass import getpass
-import hashlib
+
 
 session_user = None
 
@@ -50,6 +53,7 @@ def menu_get_user():
     
     try:
         if session_user['role']=="admin":
+            print(f"(Current environment: {config.ENV})\n")
             user_id = val_user(input("User ID: "))
         else:
             user_id = session_user['user_id']
@@ -67,6 +71,7 @@ def menu_mod_user():
     print("")
     try:
         if session_user['role']=="admin":
+            print(f"(Current environment: {config.ENV})\n")
             user_id = val_user(input("User ID to be modified: "))
         else:
             user_id = session_user['user_id']
@@ -125,6 +130,7 @@ def menu_del_user():
     print("")
     try:
         if session_user['role']=="admin":
+            print(f"(Current environment: {config.ENV})\n")
             user_id = val_user(input("User ID: "))
         else:
             user_id = session_user['user_id']
@@ -156,6 +162,7 @@ def menu_add_wo():
     print("")
     try:
         if session_user['role']=="admin":
+            print(f"(Current environment: {config.ENV})\n")
             user_id = val_user(input("User ID: "))
         else:
             user_id = session_user['user_id']
@@ -180,6 +187,7 @@ def menu_get_wo():
     print("")
     try:
         if session_user['role']=="admin":
+            print(f"(Current environment: {config.ENV})\n")
             user_id = val_user(input("User ID: ")) 
         else:
             user_id = session_user['user_id']
@@ -221,10 +229,16 @@ def menu_mod_wo():
     # clean_con()
     print(f"\n{'='*10}{' '*2} MODIFY WORKOUT {' '*2}{'='*10}")
     print("")
-    if session_user['role']!="admin":
+    if session_user['role'] == "admin":
+        print(f"(Current environment: {config.ENV})\n")
+        user_id = None
+    else:
         user_id = session_user['user_id']
     try:
-        wo_id = val_wo(input("Workout ID to be modified: "), user_id)
+        wo_id = input("Workout ID to be modified: ")
+        if wo_id == "":
+            raise ValueError("WorkoutID cannot be empty.")
+        wo_id = val_wo(wo_id, user_id)
     except ValueError as e:
         print(e)
         pause()
@@ -275,9 +289,11 @@ def menu_mod_wo():
 
 def menu_del_wo():
     # clean_con()
-    print(f"\n{'='*10}{' '*2} DELETE WORKOUT {' '*2}{'='*10}")
-    print("")
-    if session_user['role']!="admin":
+    print(f"\n{'='*10}{' '*2} DELETE WORKOUT {' '*2}{'='*10}\n")
+    if session_user['role'] == "admin":
+        print(f"(Current environment: {config.ENV})\n")
+        user_id=None
+    else:
         user_id = session_user['user_id']
     try:
         wo_id = val_wo(input("Workout ID to be deleted: "), user_id)
@@ -356,6 +372,19 @@ def user_menu():
                 print("Please, select a valid option")
                 pause()
 
+def sel_environment():
+    if session_user['role'] =="admin":
+        env = 0
+        while env not in ("1","2"):
+            env = input("\nPlease, select an environment (PROD=1; DEV=2): ")
+            if env == "1":
+                config.set_environment(1)
+            elif env == "2":
+                config.set_environment(2)
+            else:
+                print("Please, select a valid option")
+                pause()
+
 def main_menu():
     global session_user
     while session_user:
@@ -368,10 +397,14 @@ def main_menu():
         print("")
         print("     1.- Add workout")
         print("     2.- View workout")
-        print("     3.- Delete workout")
+        print("     3.- Modify workout")
+        print("     4.- Delete workout")
         print("")
-        print("     9.- User management")
+        print("     5.- User management")
         print("")
+        if session_user['role'] == "admin":
+            print(f"     9.- Change environment (current: {config.ENV})")
+            print("")
         print("     0.- Exit")
         option = input("\nSelect an option: ")
 
@@ -385,8 +418,16 @@ def main_menu():
                 menu_get_wo()
             case "3":
                 menu_mod_wo()
-            case "9":
+            case "4":
+                menu_del_wo()
+            case "5":
                 user_menu()
+            case "9":
+                if session_user['role'] == "admin":
+                    sel_environment()
+                else:
+                    print("Please, select a valid option")
+                    pause()
             case _:
                 print("Please, select a valid option")
                 pause()
@@ -397,4 +438,5 @@ if __name__ == "__main__":
         if session_user == None:
             login()
         if session_user:
+            sel_environment()
             main_menu()

@@ -1,0 +1,29 @@
+[
+  {
+    "wo_id": 2,
+    "user_id": 2,
+    "wo_date": "2025-12-20",
+    "exercise": "Biceps",
+    "amount": 30,
+    "amount_type": "r",
+    "intensity": "Hi"
+  },
+  {
+    "wo_id": 3,
+    "user_id": 2,
+    "wo_date": "2025-12-15",
+    "exercise": "Correr",
+    "amount": 50,
+    "amount_type": "t",
+    "intensity": "Me"
+  },
+  {
+    "wo_id": 4,
+    "user_id": 1,
+    "wo_date": "2025-12-21",
+    "exercise": "Cinta Correr",
+    "amount": 24,
+    "amount_type": "t",
+    "intensity": "Lo"
+  }
+]

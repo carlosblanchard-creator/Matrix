@@ -2,8 +2,10 @@ import json
 import os
 
 # Load config
-with open("config.json", "r") as config:
-    config = json.load(config)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(BASE_DIR,"config.json")
+with open(config_path, "r") as f:
+    config = json.load(f)
 
 path = config["json_path"]
 
@@ -21,4 +23,3 @@ def load_file(f_name):
 def save_file(content, f_name):
     with open(path+f_name,"w") as f:
         json.dump(content, f, indent=2, default=str)
-
