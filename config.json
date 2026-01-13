@@ -1,5 +1,5 @@
 {
-  "ENV": "DEV",
+  "ENV": "PROD",
   "DEV": {
     "users_file": "users_dev.json",
     "workouts_file": "workouts_dev.json"

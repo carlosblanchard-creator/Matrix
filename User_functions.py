@@ -1,45 +1,45 @@
 from JSON_functions import load_file, save_file
-import config
+from config import get_users_file
 from datetime import datetime
 import re
 
 #Funciones de Usuario
 def add_user(name, age, city, email, password):
-    users = load_file(config.USERS_FILE)
+    users = load_file(get_users_file())
     new_id = max([i['user_id'] for i in users]) + 1 if users else 1
     new_user = {'user_id': new_id, 'name': name, 'age': age, 'city': city, 'email': email, 'password':password, 'role':"user", 'created_at':datetime.now(), 'last_login': None}
     users.append(new_user)
 
-    save_file(users, config.USERS_FILE)
+    save_file(users, get_users_file())
     return new_user
 
 def mod_user(mod_id, field, field_value):
-    users = load_file(config.USERS_FILE)
+    users = load_file(get_users_file())
     for u in users:
         if u['user_id']==mod_id:
             u[field]=field_value
-            save_file(users, config.USERS_FILE)
+            save_file(users, get_users_file())
             return u
     return None
 
 def get_user(get_id):
-    users = load_file(config.USERS_FILE)
+    users = load_file(get_users_file())
     for u in users:
         if u['user_id']==get_id:
             return u
     return None
 
 def get_user_by_email(get_email):
-    users = load_file(config.USERS_FILE)
+    users = load_file(get_users_file())
     for u in users:
         if u['email']==get_email:
             return u
     return None
 
 def delete_user(delete_id):
-    users = load_file(config.USERS_FILE)
+    users = load_file(get_users_file())
     users_f = [u for u in users if u['user_id']!=delete_id]
-    save_file(users_f,config.USERS_FILE)
+    save_file(users_f,get_users_file())
     return
     
     

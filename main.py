@@ -1,8 +1,8 @@
 import os
-import config
+from config import set_environment, get_env
 from getpass import getpass
 import hashlib
-config.set_environment(1)
+set_environment(1)
 from datetime import datetime
 from User_functions import add_user, get_user, get_user_by_email,mod_user, delete_user, val_user, val_age, val_email, val_password
 from Workout_functions import add_workout, delete_workout, get_workout, mod_workout, get_workout_by_user, count_workouts, delete_workout_by_user, val_date, val_amt_tp, val_intensity, val_wo, val_amt
@@ -53,7 +53,7 @@ def menu_get_user():
     
     try:
         if session_user['role']=="admin":
-            print(f"(Current environment: {config.ENV})\n")
+            print(f"(Current environment: {get_env()})\n")
             user_id = val_user(input("User ID: "))
         else:
             user_id = session_user['user_id']
@@ -71,7 +71,7 @@ def menu_mod_user():
     print("")
     try:
         if session_user['role']=="admin":
-            print(f"(Current environment: {config.ENV})\n")
+            print(f"(Current environment: {get_env()})\n")
             user_id = val_user(input("User ID to be modified: "))
         else:
             user_id = session_user['user_id']
@@ -130,7 +130,7 @@ def menu_del_user():
     print("")
     try:
         if session_user['role']=="admin":
-            print(f"(Current environment: {config.ENV})\n")
+            print(f"(Current environment: {get_env()})\n")
             user_id = val_user(input("User ID: "))
         else:
             user_id = session_user['user_id']
@@ -162,11 +162,11 @@ def menu_add_wo():
     print("")
     try:
         if session_user['role']=="admin":
-            print(f"(Current environment: {config.ENV})\n")
+            print(f"(Current environment: {get_env()})\n")
             user_id = val_user(input("User ID: "))
         else:
             user_id = session_user['user_id']
-        wo_date = val_date(input("Workout date YYYY-MM-DD: "))
+        wo_date = val_date(input("Workout date YYYY-MM-DD or YYYY-MM-DD HH:MM: "))
         exercise = input("Exercise: ")
         amount_type = val_amt_tp(input("Amount type 'r' (reps) / 't' (time): "))
         amount = val_amt(input("Amount: "))
@@ -187,15 +187,15 @@ def menu_get_wo():
     print("")
     try:
         if session_user['role']=="admin":
-            print(f"(Current environment: {config.ENV})\n")
+            print(f"(Current environment: {get_env()})\n")
             user_id = val_user(input("User ID: ")) 
         else:
             user_id = session_user['user_id']
-        wo_ini_date = input("From date YYYY-MM-DD (optional)): ").strip() or None
+        wo_ini_date = input("From date YYYY-MM-DD or YYYY-MM-DD HH:MM (optional)): ").strip() or None
         wo_end_date = None
         if wo_ini_date:
             wo_ini_date = val_date(wo_ini_date)
-            wo_end_date = input("To date YYYY-MM-DD (optional)): ").strip() or None
+            wo_end_date = input("To date YYYY-MM-DD or YYYY-MM-DD HH:MM (optional)): ").strip() or None
         if wo_end_date:
             wo_end_date = val_date(wo_end_date, True)
         
@@ -209,8 +209,9 @@ def menu_get_wo():
         
         total_reps = sum(int(w['amount']) for w in workouts if w['amount_type']=='r')
         total_mins = sum(int(w['amount']) for w in workouts if w['amount_type']=='t')
-        wo_ini_date = datetime.strptime(min(w['wo_date'] for w in workouts),"%Y-%m-%d")
-        wo_end_date = datetime.strptime(max(w['wo_date'] for w in workouts),"%Y-%m-%d")
+        wo_ini_date = min(w['wo_date'] for w in workouts)
+        wo_end_date = datetime.today()
+        # strptime(max(w['wo_date'] for w in workouts),"%Y-%m-%d")
         delta = wo_end_date - wo_ini_date 
         
         print("\nSummary:")
@@ -230,7 +231,7 @@ def menu_mod_wo():
     print(f"\n{'='*10}{' '*2} MODIFY WORKOUT {' '*2}{'='*10}")
     print("")
     if session_user['role'] == "admin":
-        print(f"(Current environment: {config.ENV})\n")
+        print(f"(Current environment: {get_env()})\n")
         user_id = None
     else:
         user_id = session_user['user_id']
@@ -291,7 +292,7 @@ def menu_del_wo():
     # clean_con()
     print(f"\n{'='*10}{' '*2} DELETE WORKOUT {' '*2}{'='*10}\n")
     if session_user['role'] == "admin":
-        print(f"(Current environment: {config.ENV})\n")
+        print(f"(Current environment: {get_env()})\n")
         user_id=None
     else:
         user_id = session_user['user_id']
@@ -378,9 +379,9 @@ def sel_environment():
         while env not in ("1","2"):
             env = input("\nPlease, select an environment (PROD=1; DEV=2): ")
             if env == "1":
-                config.set_environment(1)
+                set_environment(1)
             elif env == "2":
-                config.set_environment(2)
+                set_environment(2)
             else:
                 print("Please, select a valid option")
                 pause()
@@ -403,7 +404,7 @@ def main_menu():
         print("     5.- User management")
         print("")
         if session_user['role'] == "admin":
-            print(f"     9.- Change environment (current: {config.ENV})")
+            print(f"     9.- Change environment (current: {get_env()})")
             print("")
         print("     0.- Exit")
         option = input("\nSelect an option: ")

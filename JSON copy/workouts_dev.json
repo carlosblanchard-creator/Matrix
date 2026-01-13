@@ -2,7 +2,7 @@
   {
     "wo_id": 2,
     "user_id": 2,
-    "wo_date": "2025-12-20 00:00",
+    "wo_date": "2025-12-20",
     "exercise": "Biceps",
     "amount": 30,
     "amount_type": "r",
@@ -11,7 +11,7 @@
   {
     "wo_id": 3,
     "user_id": 2,
-    "wo_date": "2025-12-15 00:00",
+    "wo_date": "2025-12-15",
     "exercise": "Correr",
     "amount": 50,
     "amount_type": "t",
@@ -20,7 +20,7 @@
   {
     "wo_id": 4,
     "user_id": 1,
-    "wo_date": "2025-12-21 00:00",
+    "wo_date": "2025-12-21",
     "exercise": "Cinta Correr",
     "amount": 24,
     "amount_type": "t",
